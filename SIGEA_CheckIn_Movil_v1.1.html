@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#002b7f">
+<title>SIGEA Intelligence · Check-In Móvil</title>
+<style>
+:root{--azul:#002b7f;--azul2:#0a58b5;--oro:#d59f0f;--fondo:#eef3f9;--texto:#172033;--gris:#667085;--borde:#d8e1ec}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(#f8fbff,var(--fondo));color:var(--texto);font-family:Arial,sans-serif}
+header{padding:calc(18px + env(safe-area-inset-top)) 18px 18px;color:#fff;background:linear-gradient(135deg,var(--azul),var(--azul2));border-bottom:5px solid var(--oro)}
+.wrap{max-width:720px;margin:auto}h1{margin:5px 0 2px;font-size:26px}.inst,.sub{margin:0;font-size:12px;opacity:.9}
+main{max-width:720px;margin:auto;padding:18px 14px calc(24px + env(safe-area-inset-bottom))}
+.panel{padding:16px;background:#fff;border:1px solid var(--borde);border-radius:18px;box-shadow:0 14px 36px rgba(0,43,127,.08)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.top h2{margin:0;color:var(--azul);font-size:19px}
+.badge{padding:7px 10px;border-radius:999px;background:#edf4ff;color:var(--azul);font-size:10px;font-weight:900}
+#reader{width:100%;min-height:390px;overflow:hidden;background:#111827;border-radius:14px}#reader video{object-fit:cover!important}
+.ayuda{color:var(--gris);font-size:12px;line-height:1.5;text-align:center}
+.error{display:none;margin-top:12px;padding:12px;border-radius:10px;background:#fff0f0;color:#8b1e1e;font-size:12px}.error.on{display:block}
+</style>
+<script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+<header><div class="wrap"><p class="inst">UNAM · ENES Unidad Oaxaca</p><h1>SIGEA Check-In Móvil</h1><p class="sub">SIGEA Intelligence · Lectura de Pase Digital</p></div></header>
+<main>
+<section class="panel">
+<div class="top"><h2>Escanear código QR</h2><span id="estado" class="badge">PREPARANDO</span></div>
+<div id="reader"></div>
+<p class="ayuda">Autorice la cámara y coloque el Pase Digital dentro del recuadro.</p>
+<div id="error" class="error"></div>
+</section>
+</main>
+<script>
+const SIGEA_URL='https://script.google.com/macros/s/AKfycbzZ0NbKPcYSAQcoXdmdzzHE15qV4aakBEtVqB3b2FJhdJHcUN167kAaRcdly7PqGJVy/exec';
+const p=new URLSearchParams(location.search);
+const idEvento=String(p.get('idEvento')||'').trim();
+let scanner=null,bloqueado=false;
+
+window.addEventListener('load',()=>{
+  if(!idEvento){
+    mostrarError('Falta idEvento en la URL. Ejemplo: ?idEvento=EVT-2026-0008');
+    estado('CONFIGURAR');
+    return;
+  }
+  iniciar();
+});
+
+async function iniciar(){
+  try{
+    estado('SOLICITANDO CÁMARA');
+    scanner=new Html5Qrcode('reader');
+    await scanner.start(
+      {facingMode:'environment'},
+      {fps:10,qrbox:(w,h)=>{const l=Math.floor(Math.min(w,h)*.72);return{width:l,height:l}}},
+      leer,
+      ()=>{}
+    );
+    estado('LISTO PARA ESCANEAR');
+  }catch(e){
+    estado('ERROR DE CÁMARA');
+    mostrarError('No fue posible iniciar la cámara: '+(e.message||e));
+  }
+}
+
+async function leer(texto){
+  if(bloqueado)return;
+  const codigo=String(texto||'').trim();
+  if(!codigo)return;
+  bloqueado=true;
+  estado('QR DETECTADO');
+
+  try{await scanner.stop();}catch(_){}
+
+  const destino=new URL(SIGEA_URL);
+  destino.searchParams.set('vista','checkin');
+  destino.searchParams.set('idEvento',idEvento);
+  destino.searchParams.set('codigo',codigo);
+  destino.searchParams.set('origen','CAMARA_MOVIL');
+
+  location.href=destino.toString();
+}
+
+function estado(t){document.getElementById('estado').textContent=t}
+function mostrarError(t){const e=document.getElementById('error');e.textContent=t;e.classList.add('on')}
+</script>
+</body>
+</html>
