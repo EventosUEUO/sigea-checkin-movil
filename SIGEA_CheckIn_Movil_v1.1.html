@@ -37,7 +37,13 @@ footer{margin-top:16px;color:var(--gris);font-size:10px;text-align:center;line-h
   <h2>Seleccionar evento</h2>
   <p>Para esta demostración, seleccione el evento que se operará. El lector validará únicamente los Pases Digitales de ese evento.</p>
   <select id="selectorEvento"><option value="">Seleccione un evento</option></select>
-  <div class="acciones"><button id="btnUsarEvento" class="primario" type="button">Usar este evento</button>
+  <div class="acciones"><button id="btnUsarEvento"
+  class="primario"
+  type="button"
+  onclick="usarEventoSeleccionado()"
+>
+  Usar este evento
+</button>
 </section>
 
 <section id="panelEventoActivo" class="evento-activo oculto">
@@ -69,7 +75,8 @@ const EVENTOS_DEMO = [
   {id:'EVT-2026-0007', nombre:'Conferencia 1'},
   {id:'EVT-2026-0008', nombre:'Conferencia Identidad Digital'}
 ];
-
+const STORAGE_EVENTO =
+  'SIGEA_CHECKIN_EVENTO';
 const PARAMS =
   new URLSearchParams(
     window.location.search
