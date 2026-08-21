@@ -70,8 +70,15 @@ const EVENTOS_DEMO = [
   {id:'EVT-2026-0008', nombre:'Conferencia Identidad Digital'}
 ];
 
-const SIGEA_WEBAPP_URL='https://script.google.com/macros/s/AKfycbzZ0NbKPcYSAQcoXdmdzzHE15qV4aakBEtVqB3b2FJhdJHcUN167kAaRcdly7PqGJVy/exec';
-const PARAMS=new URLSearchParams(window.location.search);
+const PARAMS =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const SIGEA_WEBAPP_URL =
+  String(
+    PARAMS.get('webapp') || ''
+  ).trim();
 
 let ID_EVENTO='';
 let NOMBRE_EVENTO='';
@@ -83,9 +90,9 @@ window.addEventListener('load',function(){
 
   const eventoUrl=String(PARAMS.get('idEvento')||'').trim();
   const eventoGuardado=String(localStorage.getItem(STORAGE_EVENTO)||'').trim();
-  const candidato=eventoUrl||eventoGuardado;
-
-  if(candidato){
+  function configuracionValida(){
+  return Boolean(SIGEA_WEBAPP_URL);
+}
     seleccionarEventoPorId(candidato,false);
   }
 });
