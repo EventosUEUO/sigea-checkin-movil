@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#002b7f"
+  >
+
+  <title>
+    SIGEA Intelligence · Check-In Móvil
+  </title>
+
+
+  <style>
+
+    :root {
+      --azul: #002b7f;
+      --azul2: #0a58b5;
+      --oro: #d59f0f;
+
+      --fondo: #eef3f9;
+      --panel: #ffffff;
+      --texto: #172033;
+      --gris: #667085;
+      --borde: #d8e1ec;
+
+      --verde: #176a37;
+      --verde-bg: #e8f6ed;
+
+      --ambar: #8a5b00;
+      --ambar-bg: #fff7df;
+
+      --rojo: #8b1e1e;
+      --rojo-bg: #fff0f0;
+    }
+
+
+    * {
+      box-sizing: border-box;
+    }
+
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      color: var(--texto);
+
+      background:
+        linear-gradient(
+          180deg,
+          #f8fbff,
+          var(--fondo)
+        );
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    }
+
+
+    header {
+      padding:
+        calc(
+          18px +
+          env(safe-area-inset-top)
+        )
+        18px
+        18px;
+
+      color: #ffffff;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--azul),
+          var(--azul2)
+        );
+
+      border-bottom:
+        5px solid
+        var(--oro);
+    }
+
+
+    .cabecera {
+      max-width: 720px;
+      margin: auto;
+    }
+
+
+    .marca {
+      margin: 0;
+
+      font-size: 12px;
+      font-weight: 800;
+
+      opacity: .9;
+    }
+
+
+    h1 {
+      margin:
+        7px 0 2px;
+
+      font-size: 26px;
+    }
+
+
+    .sub {
+      margin: 0;
+
+      font-size: 13px;
+
+      opacity: .85;
+    }
+
+
+    main {
+      max-width: 720px;
+      margin: auto;
+
+      padding:
+        18px 14px
+        calc(
+          24px +
+          env(safe-area-inset-bottom)
+        );
+    }
+
+
+    .panel {
+      overflow: hidden;
+
+      background: var(--panel);
+
+      border:
+        1px solid
+        var(--borde);
+
+      border-radius: 18px;
+
+      box-shadow:
+        0 14px 36px
+        rgba(
+          0,
+          43,
+          127,
+          .08
+        );
+    }
+
+
+    .panel-camara {
+      padding: 16px;
+    }
+
+
+    .estado-superior {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      margin-bottom: 14px;
+    }
+
+
+    .estado-superior h2 {
+      margin: 0;
+
+      color: var(--azul);
+
+      font-size: 19px;
+    }
+
+
+    .badge {
+      padding: 7px 10px;
+
+      color: var(--azul);
+
+      background: #edf4ff;
+
+      border-radius: 999px;
+
+      font-size: 10px;
+      font-weight: 900;
+
+      white-space: nowrap;
+    }
+
+
+    .evento-activo {
+      margin-bottom: 14px;
+
+      padding: 12px 14px;
+
+      color: var(--azul);
+
+      background: #f5f8ff;
+
+      border:
+        1px solid
+        #dbe6fa;
+
+      border-radius: 11px;
+
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+
+    .evento-activo strong {
+      display: block;
+
+      margin-bottom: 3px;
+
+      font-size: 14px;
+    }
+
+
+    #reader {
+      width: 100%;
+
+      min-height: 340px;
+
+      overflow: hidden;
+
+      background: #111827;
+
+      border-radius: 14px;
+    }
+
+
+    #reader video {
+      object-fit: cover !important;
+    }
+
+
+    .ayuda {
+      margin:
+        12px 2px 0;
+
+      color: var(--gris);
+
+      font-size: 12px;
+      line-height: 1.5;
+
+      text-align: center;
+    }
+
+
+    .acciones {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap: 10px;
+
+      margin-top: 14px;
+    }
+
+
+    button {
+      min-height: 48px;
+
+      padding: 12px;
+
+      cursor: pointer;
+
+      border: 0;
+      border-radius: 11px;
+
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+
+    .primario {
+      color: #ffffff;
+
+      background: var(--azul);
+    }
+
+
+    .secundario {
+      color: var(--azul);
+
+      background: #edf4ff;
+    }
+
+
+    .resultado {
+      display: none;
+
+      margin-top: 16px;
+      padding: 20px;
+
+      text-align: center;
+    }
+
+
+    .resultado.visible {
+      display: block;
+    }
+
+
+    .resultado.error {
+      color: var(--rojo);
+
+      background: var(--rojo-bg);
+    }
+
+
+    .resultado.advertencia {
+      color: var(--ambar);
+
+      background: var(--ambar-bg);
+    }
+
+
+    .resultado.exito {
+      color: var(--verde);
+
+      background: var(--verde-bg);
+    }
+
+
+    .icono {
+      font-size: 46px;
+      font-weight: 900;
+    }
+
+
+    .config-error {
+      margin-bottom: 14px;
+
+      padding: 12px;
+
+      color: var(--rojo);
+
+      background: var(--rojo-bg);
+
+      border-radius: 11px;
+
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+
+    .selector-evento {
+      margin-bottom: 14px;
+
+      padding: 14px;
+
+      background: #fffaf0;
+
+      border:
+        1px solid
+        #eadcb5;
+
+      border-radius: 12px;
+    }
+
+
+    .selector-evento label {
+      display: block;
+
+      margin-bottom: 6px;
+
+      color: var(--gris);
+
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+
+    .selector-evento select {
+      width: 100%;
+
+      min-height: 46px;
+
+      padding: 10px 12px;
+
+      border:
+        1px solid
+        var(--borde);
+
+      border-radius: 9px;
+
+      background: #ffffff;
+
+      font-size: 14px;
+    }
+
+
+    .selector-evento button {
+      width: 100%;
+
+      margin-top: 10px;
+    }
+
+
+    .oculto {
+      display: none !important;
+    }
+
+
+    footer {
+      margin-top: 16px;
+
+      color: var(--gris);
+
+      font-size: 10px;
+      line-height: 1.5;
+
+      text-align: center;
+    }
+
+
+    @media (
+      max-width: 520px
+    ) {
+
+      #reader {
+        min-height: 390px;
+      }
+
+      .acciones {
+        grid-template-columns:
+          1fr;
+      }
+    }
+
+  </style>
+
+
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    type="text/javascript"
+  ></script>
+
+</head>
+
+
+<body>
+
+  <header>
+
+    <div class="cabecera">
+
+      <p class="marca">
+        UNAM · ENES Unidad Oaxaca
+      </p>
+
+      <h1>
+        SIGEA Check-In Móvil
+      </h1>
+
+      <p class="sub">
+        SIGEA Intelligence ·
+        Registro de asistencia por cámara
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <section
+      class="panel panel-camara"
+    >
+
+      <div class="estado-superior">
+
+        <h2>
+          Escanear Pase Digital
+        </h2>
+
+        <span
+          id="badgeEstado"
+          class="badge"
+        >
+          PREPARANDO
+        </span>
+
+      </div>
+
+
+      <div
+        id="configError"
+        class="config-error oculto"
+      ></div>
+
+
+      <!--
+        Se muestra únicamente cuando
+        la página se abre SIN idEvento.
+      -->
+      <div
+        id="selectorEvento"
+        class="selector-evento oculto"
+      >
+
+        <label for="eventoManual">
+          Seleccione el evento
+        </label>
+
+        <select id="eventoManual">
+          <option value="">
+            Seleccione un evento
+          </option>
+
+          <option value="EVT-2026-0007">
+            Conferencia 1
+          </option>
+
+          <option value="EVT-2026-0008">
+            Conferencia Identidad Digital
+          </option>
+        </select>
+
+        <button
+          class="primario"
+          type="button"
+          onclick="usarEventoManual()"
+        >
+          Usar este evento
+        </button>
+
+      </div>
+
+
+      <div
+        id="eventoActivo"
+        class="evento-activo oculto"
+      >
+
+        <strong>
+          Evento activo
+        </strong>
+
+        <span id="eventoActivoTexto"></span>
+
+      </div>
+
+
+      <div id="reader"></div>
+
+
+      <p class="ayuda">
+        Autorice el uso de la cámara
+        y coloque el código QR del
+        Pase Digital dentro del recuadro.
+        SIGEA detendrá la cámara al detectar
+        una lectura válida.
+      </p>
+
+
+      <div class="acciones">
+
+        <button
+          id="btnIniciar"
+          class="primario"
+          type="button"
+          onclick="iniciarCamara()"
+        >
+          Iniciar cámara
+        </button>
+
+
+        <button
+          id="btnDetener"
+          class="secundario"
+          type="button"
+          onclick="detenerCamara()"
+        >
+          Detener cámara
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <section
+      id="resultado"
+      class="panel resultado"
+    ></section>
+
+
+    <footer>
+      SIGEA Intelligence ·
+      Universidad Nacional Autónoma de México
+      <br>
+      Escuela Nacional de Estudios Superiores ·
+      Unidad Oaxaca
+    </footer>
+
+  </main>
+
+
+  <script>
+
+    /* ========================================================
+       CONFIGURACIÓN
+       ======================================================== */
+
+    const PARAMS =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const SIGEA_WEBAPP_URL =
+      String(
+        PARAMS.get('webapp') || ''
+      ).trim();
+
+
+    let ID_EVENTO =
+      String(
+        PARAMS.get('idEvento') || ''
+      ).trim();
+
+
+    let NOMBRE_EVENTO =
+      String(
+        PARAMS.get('nombreEvento') || ''
+      ).trim();
+
+
+    let scanner =
+      null;
+
+
+    let activo =
+      false;
+
+
+    let procesando =
+      false;
+
+
+    let ultimoCodigo =
+      '';
+
+
+    let ultimoMomento =
+      0;
+
+
+    /* ========================================================
+       INICIO
+       ======================================================== */
+
+    window.addEventListener(
+      'load',
+      function() {
+
+        validarConfiguracion();
+
+        /*
+         * Si SIGEA ya envió idEvento,
+         * no preguntamos nada al usuario.
+         */
+        if (ID_EVENTO) {
+
+          mostrarEventoActivo();
+
+          /*
+           * Iniciamos la cámara automáticamente.
+           */
+          setTimeout(
+            function() {
+              iniciarCamara();
+            },
+            300
+          );
+
+          return;
+        }
+
+
+        /*
+         * Respaldo:
+         * sólo si la página fue abierta directamente.
+         */
+        document
+          .getElementById(
+            'selectorEvento'
+          )
+          .classList
+          .remove(
+            'oculto'
+          );
+
+
+        cambiarBadge(
+          'SELECCIONE EVENTO'
+        );
+      }
+    );
+
+
+    /* ========================================================
+       VALIDACIÓN
+       ======================================================== */
+
+    function configuracionValida() {
+
+      return Boolean(
+        SIGEA_WEBAPP_URL
+      );
+    }
+
+
+    function validarConfiguracion() {
+
+      const errores =
+        [];
+
+
+      if (!SIGEA_WEBAPP_URL) {
+
+        errores.push(
+          'Falta la URL de SIGEA.'
+        );
+      }
+
+
+      const panel =
+        document.getElementById(
+          'configError'
+        );
+
+
+      if (errores.length) {
+
+        panel.innerHTML =
+          '<b>Configuración pendiente:</b><br>' +
+          errores.join('<br>');
+
+
+        panel
+          .classList
+          .remove(
+            'oculto'
+          );
+
+
+        cambiarBadge(
+          'CONFIGURAR'
+        );
+
+      } else {
+
+        panel
+          .classList
+          .add(
+            'oculto'
+          );
+      }
+    }
+
+
+    /* ========================================================
+       EVENTO
+       ======================================================== */
+
+    function usarEventoManual() {
+
+      const selector =
+        document.getElementById(
+          'eventoManual'
+        );
+
+
+      const id =
+        String(
+          selector.value || ''
+        ).trim();
+
+
+      if (!id) {
+
+        mostrarError(
+          'Seleccione un evento.'
+        );
+
+        return;
+      }
+
+
+      ID_EVENTO =
+        id;
+
+
+      NOMBRE_EVENTO =
+        selector.options[
+          selector.selectedIndex
+        ].text;
+
+
+      document
+        .getElementById(
+          'selectorEvento'
+        )
+        .classList
+        .add(
+          'oculto'
+        );
+
+
+      mostrarEventoActivo();
+
+
+      iniciarCamara();
+    }
+
+
+    function mostrarEventoActivo() {
+
+      const panel =
+        document.getElementById(
+          'eventoActivo'
+        );
+
+
+      const texto =
+        document.getElementById(
+          'eventoActivoTexto'
+        );
+
+
+      texto.textContent =
+        NOMBRE_EVENTO
+          ? (
+              NOMBRE_EVENTO +
+              ' · ' +
+              ID_EVENTO
+            )
+          : ID_EVENTO;
+
+
+      panel
+        .classList
+        .remove(
+          'oculto'
+        );
+    }
+
+
+    /* ========================================================
+       CÁMARA
+       ======================================================== */
+
+    async function iniciarCamara() {
+
+      if (
+        activo ||
+        procesando
+      ) {
+        return;
+      }
+
+
+      if (
+        typeof Html5Qrcode ===
+        'undefined'
+      ) {
+
+        mostrarError(
+          'No fue posible cargar el lector QR.'
+        );
+
+        return;
+      }
+
+
+      if (
+        !configuracionValida()
+      ) {
+
+        validarConfiguracion();
+
+        return;
+      }
+
+
+      if (!ID_EVENTO) {
+
+        mostrarError(
+          'No se recibió el identificador del evento.'
+        );
+
+        return;
+      }
+
+
+      try {
+
+        cambiarBadge(
+          'SOLICITANDO CÁMARA'
+        );
+
+
+        scanner =
+          new Html5Qrcode(
+            'reader'
+          );
+
+
+        await scanner.start(
+
+          {
+            facingMode:
+              'environment'
+          },
+
+          {
+            fps:
+              10,
+
+            qrbox:
+              function(
+                ancho,
+                alto
+              ) {
+
+                const lado =
+                  Math.floor(
+                    Math.min(
+                      ancho,
+                      alto
+                    ) *
+                    .70
+                  );
+
+
+                return {
+                  width:
+                    lado,
+
+                  height:
+                    lado
+                };
+              },
+
+            aspectRatio:
+              1.0
+          },
+
+          onQrDetectado,
+
+          function() {
+            /*
+             * Los errores de cuadro
+             * sin QR son normales.
+             */
+          }
+
+        );
+
+
+        activo =
+          true;
+
+
+        cambiarBadge(
+          'LISTO PARA ESCANEAR'
+        );
+
+      } catch (error) {
+
+        activo =
+          false;
+
+
+        scanner =
+          null;
+
+
+        mostrarError(
+          'No fue posible abrir la cámara: ' +
+          normalizarError(
+            error
+          )
+        );
+
+
+        cambiarBadge(
+          'ERROR DE CÁMARA'
+        );
+      }
+    }
+
+
+    async function detenerCamara() {
+
+      if (!scanner) {
+
+        activo =
+          false;
+
+        return;
+      }
+
+
+      try {
+
+        if (activo) {
+
+          await scanner.stop();
+        }
+
+
+        try {
+
+          await scanner.clear();
+
+        } catch (_) {
+        }
+
+
+      } catch (_) {
+      }
+
+
+      scanner =
+        null;
+
+
+      activo =
+        false;
+
+
+      cambiarBadge(
+        'CÁMARA DETENIDA'
+      );
+    }
+
+
+    /* ========================================================
+       QR DETECTADO
+       ======================================================== */
+
+    async function onQrDetectado(
+      texto
+    ) {
+
+      const codigo =
+        String(
+          texto || ''
+        ).trim();
+
+
+      if (!codigo) {
+        return;
+      }
+
+
+      const ahora =
+        Date.now();
+
+
+      /*
+       * Evita doble lectura inmediata.
+       */
+      if (
+        codigo === ultimoCodigo &&
+        ahora - ultimoMomento <
+          3500
+      ) {
+
+        return;
+      }
+
+
+      ultimoCodigo =
+        codigo;
+
+
+      ultimoMomento =
+        ahora;
+
+
+      procesando =
+        true;
+
+
+      cambiarBadge(
+        'QR DETECTADO'
+      );
+
+
+      await detenerCamara();
+
+
+      enviarASIGEA(
+        codigo
+      );
+    }
+
+
+    /* ========================================================
+       ENVÍO A SIGEA
+       ======================================================== */
+
+    function enviarASIGEA(
+      codigo
+    ) {
+
+      cambiarBadge(
+        'PROCESANDO'
+      );
+
+
+      const url =
+        new URL(
+          SIGEA_WEBAPP_URL
+        );
+
+
+      /*
+       * Regresamos al frmCheckIn.
+       *
+       * Esa pantalla ya sabe recibir:
+       * - codigo
+       * - idEvento
+       * - origen=CAMARA_MOVIL
+       */
+      url.searchParams.set(
+        'vista',
+        'checkin'
+      );
+
+
+      url.searchParams.set(
+        'idEvento',
+        ID_EVENTO
+      );
+
+
+      url.searchParams.set(
+        'codigo',
+        codigo
+      );
+
+
+      url.searchParams.set(
+        'origen',
+        'CAMARA_MOVIL'
+      );
+
+
+      window.location.href =
+        url.toString();
+    }
+
+
+    /* ========================================================
+       ERRORES
+       ======================================================== */
+
+    function mostrarError(
+      mensaje
+    ) {
+
+      const panel =
+        document.getElementById(
+          'resultado'
+        );
+
+
+      panel.className =
+        'panel resultado visible error';
+
+
+      panel.innerHTML =
+        '<div class="icono">×</div>' +
+        '<h3>' +
+        escapar(
+          mensaje
+        ) +
+        '</h3>';
+    }
+
+
+    function cambiarBadge(
+      texto
+    ) {
+
+      document
+        .getElementById(
+          'badgeEstado'
+        )
+        .textContent =
+        texto;
+    }
+
+
+    function normalizarError(
+      error
+    ) {
+
+      if (!error) {
+
+        return 'Error desconocido.';
+      }
+
+
+      if (
+        typeof error ===
+        'string'
+      ) {
+
+        return error;
+      }
+
+
+      return (
+        error.message ||
+        error.name ||
+        String(error)
+      );
+    }
+
+
+    function escapar(
+      valor
+    ) {
+
+      return String(
+        valor || ''
+      )
+        .replace(
+          /&/g,
+          '&amp;'
+        )
+        .replace(
+          /</g,
+          '&lt;'
+        )
+        .replace(
+          />/g,
+          '&gt;'
+        )
+        .replace(
+          /"/g,
+          '&quot;'
+        )
+        .replace(
+          /'/g,
+          '&#039;'
+        );
+    }
+
+  </script>
+
+</body>
+
+</html>
