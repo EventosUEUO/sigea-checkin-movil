@@ -88,19 +88,32 @@ window.addEventListener('load',function(){
   cargarEventosDemo();
   validarConfiguracion();
 
-  const eventoUrl=String(PARAMS.get('idEvento')||'').trim();
-  const eventoGuardado=String(localStorage.getItem(STORAGE_EVENTO)||'').trim();
-  function configuracionValida(){
-  return Boolean(SIGEA_WEBAPP_URL);
-}
-    seleccionarEventoPorId(candidato,false);
+  const eventoUrl =
+    String(
+      PARAMS.get('idEvento') || ''
+    ).trim();
+
+  const eventoGuardado =
+    String(
+      localStorage.getItem(STORAGE_EVENTO) || ''
+    ).trim();
+
+  const candidato =
+    eventoUrl || eventoGuardado;
+
+  if(candidato){
+    seleccionarEventoPorId(
+      candidato,
+      false
+    );
   }
 });
 
 function configuracionValida(){
-  return SIGEA_WEBAPP_URL&&!SIGEA_WEBAPP_URL.includes('PEGA_AQUI');
+  return Boolean(
+    SIGEA_WEBAPP_URL
+  );
 }
-
 function validarConfiguracion(){
   const errores=[];
   if(!configuracionValida())errores.push('Falta configurar la URL /exec de SIGEA.');
